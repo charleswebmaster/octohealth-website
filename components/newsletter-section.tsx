@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 export function NewsletterSection() {
   return (
-    <section className="py-20 bg-gradient-to-r from-[#343E8F] to-purple-600">
+    <section id="newsletter-section" className="py-20 bg-gradient-to-r from-[#343E8F] to-purple-600">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="max-w-4xl mx-auto shadow-2xl border-0">
           <CardContent className="p-12 text-center">

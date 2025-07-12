@@ -16,7 +16,7 @@ export function Footer() {
               alt="OctoHealth Logo"
               width={180}
               height={40}
-              className="h-11 w-auto brightness-0 invert"
+              className="h-11 w-auto opacity-90"
             />
             <p className="text-gray-400">
               Africa's leading Health ERP solution for HMOs and health insurers. Transforming healthcare operations

@@ -9,6 +9,14 @@ import { Menu, X } from "lucide-react"
 export function BlogHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  const scrollToNewsletter = () => {
+    const newsletterSection = document.getElementById("newsletter-section")
+    if (newsletterSection) {
+      newsletterSection.scrollIntoView({ behavior: "smooth" })
+    }
+    setIsMenuOpen(false)
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,12 +35,12 @@ export function BlogHeader() {
             <Link href="/blog" className="text-[#343E8F] font-medium border-b-2 border-[#343E8F] pb-1">
               Blog
             </Link>
-            <Link href="#newsletter" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
+            <button
+              onClick={scrollToNewsletter}
+              className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors"
+            >
               Newsletter
-            </Link>
-            <Link href="#about" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
-              About OctoHealth
-            </Link>
+            </button>
             <Button
               asChild
               className="bg-[#343E8F] hover:bg-[#2a3270] text-white shadow-lg hover:shadow-xl transition-all"
@@ -67,20 +75,12 @@ export function BlogHeader() {
               >
                 Blog
               </Link>
-              <Link
-                href="#newsletter"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                onClick={scrollToNewsletter}
+                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium transition-colors w-full text-left"
               >
                 Newsletter
-              </Link>
-              <Link
-                href="#about"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About OctoHealth
-              </Link>
+              </button>
               <div className="px-3 py-2">
                 <Button asChild className="w-full bg-[#343E8F] hover:bg-[#2a3270] text-white">
                   <Link href="/">OctoHealth ERP</Link>

@@ -121,7 +121,7 @@ export function ProductFeaturesSection() {
     },
     {
       icon: Shield,
-      title: "Extensible ReSTful API",
+      title: "Extensible RESTful API",
       description: "Easy integration to existing systems and extendable with third-party apps",
     },
     {

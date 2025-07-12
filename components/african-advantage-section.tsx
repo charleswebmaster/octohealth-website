@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, MessageSquare, FileText } from "lucide-react"
+import Image from "next/image"
 
 // Custom Naira Icon Component
 function NairaIcon({ className }: { className?: string }) {
@@ -97,10 +98,22 @@ export function AfricanAdvantageSection() {
                 <span className="text-gray-500 text-sm">Client Logo</span>
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Client Logo</span>
+                <Image
+                  src="/images/bastion-logo.webp"
+                  alt="Bastion Health"
+                  width={120}
+                  height={48}
+                  className="h-10 w-auto"
+                />
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Client Logo</span>
+                <Image
+                  src="/images/oceanic-logo.png"
+                  alt="Oceanic Health"
+                  width={120}
+                  height={48}
+                  className="h-10 w-auto"
+                />
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
                 <span className="text-gray-500 text-sm">Client Logo</span>
