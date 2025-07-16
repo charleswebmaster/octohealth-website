@@ -5,11 +5,43 @@ import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Shield, FileCheck, Users, Target, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useBlog } from "@/contexts/blog-context"
+import { useEffect, useState } from "react"
 
 export function BlogCategories() {
   const { categories, getPublishedPosts, getCategoryCount } = useBlog()
-  const publishedPosts = getPublishedPosts()
-  const recentArticles = publishedPosts.slice(0, 4) // Get 4 most recent articles
+  const [publishedPosts, setPublishedPosts] = useState([])
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const posts = getPublishedPosts()
+
+    // Convert Firestore timestamps to serializable format
+    const serializedPosts = posts.map((post) => ({
+      ...post,
+      createdAt: typeof post.createdAt === "number" ? post.createdAt : post.createdAt.toMillis(),
+      updatedAt: typeof post.updatedAt === "number" ? post.updatedAt : post.updatedAt.toMillis(),
+      publishedAt: post.publishedAt
+        ? typeof post.publishedAt === "number"
+          ? post.publishedAt
+          : post.publishedAt.toMillis()
+        : null,
+    }))
+
+    setPublishedPosts(serializedPosts.slice(0, 4))
+
+    // Load category counts
+    const loadCounts = async () => {
+      const counts: Record<string, number> = {}
+      for (const category of categories) {
+        counts[category.name] = await getCategoryCount(category.name)
+      }
+      setCategoryCounts(counts)
+      setLoading(false)
+    }
+
+    loadCounts()
+  }, [categories, getPublishedPosts, getCategoryCount])
 
   const categoryIcons = {
     "Operations & Efficiency": TrendingUp,
@@ -27,6 +59,18 @@ export function BlogCategories() {
     "Leadership & Strategy": "bg-orange-100 text-orange-600",
   }
 
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading categories...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,7 +83,7 @@ export function BlogCategories() {
                 const IconComponent = categoryIcons[category.name as keyof typeof categoryIcons] || TrendingUp
                 const colorClass =
                   categoryColors[category.name as keyof typeof categoryColors] || "bg-gray-100 text-gray-600"
-                const actualCount = getCategoryCount(category.name)
+                const count = categoryCounts[category.name] || 0
 
                 return (
                   <Card
@@ -56,7 +100,7 @@ export function BlogCategories() {
                             {category.name}
                           </CardTitle>
                           <Badge variant="outline" className="text-xs mt-1">
-                            {actualCount} {actualCount === 1 ? "article" : "articles"}
+                            {count} {count === 1 ? "article" : "articles"}
                           </Badge>
                         </div>
                       </div>
@@ -92,8 +136,8 @@ export function BlogCategories() {
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Recent Articles</h3>
             <div className="space-y-6">
-              {recentArticles.length > 0 ? (
-                recentArticles.map((article) => (
+              {publishedPosts.length > 0 ? (
+                publishedPosts.map((article) => (
                   <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="p-4">
                       <h4 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
@@ -103,7 +147,7 @@ export function BlogCategories() {
                         <Badge variant="outline" className="text-xs">
                           {article.category}
                         </Badge>
-                        <span>{article.date}</span>
+                        <span>{article.readTime}</span>
                       </div>
                     </CardContent>
                   </Card>

@@ -8,15 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, Eye, Save, ExternalLink, AlertCircle } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, Save, ExternalLink, AlertCircle, LogOut } from "lucide-react"
 import { useBlog } from "@/contexts/blog-context"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { signInAnon, signOut, onAuthChange } from "@/lib/auth"
 
 export default function AdminDashboard() {
   const {
     posts,
     categories,
-    loading,
+    loading: blogLoading,
     addPost,
     updatePost,
     deletePost,
@@ -42,10 +43,60 @@ export default function AdminDashboard() {
   const [viewingPost, setViewingPost] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [user, setUser] = useState<any>(null)
+  const [authLoading, setAuthLoading] = useState(true)
+
+  // Handle authentication
+  useEffect(() => {
+    const unsubscribe = onAuthChange((currentUser) => {
+      setUser(currentUser)
+      setAuthLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  // Auto sign in anonymously if not signed in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      handleSignIn()
+    }
+  }, [authLoading, user])
 
   useEffect(() => {
-    refreshData()
-  }, [])
+    if (user) {
+      refreshData()
+    }
+  }, [user, refreshData])
+
+  const handleSignIn = async () => {
+    setAuthLoading(true)
+    try {
+      const user = await signInAnon()
+      if (user) {
+        setUser(user)
+        showSuccess("Signed in successfully")
+      } else {
+        showError("Failed to sign in")
+      }
+    } catch (error) {
+      console.error("Error signing in:", error)
+      showError("Authentication error")
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      setUser(null)
+      showSuccess("Signed out successfully")
+    } catch (error) {
+      console.error("Error signing out:", error)
+      showError("Failed to sign out")
+    }
+  }
 
   const showError = (message: string) => {
     setError(message)
@@ -170,13 +221,33 @@ export default function AdminDashboard() {
     }
   }
 
-  if (loading) {
+  // Loading state
+  if (authLoading || blogLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1886CD] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading dashboard...</p>
         </div>
+      </div>
+    )
+  }
+
+  // Not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Admin Authentication</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-600">You need to sign in to access the admin dashboard.</p>
+            <Button onClick={handleSignIn} className="w-full bg-[#1886CD] hover:bg-[#1565A0]">
+              Sign In Anonymously
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -190,12 +261,18 @@ export default function AdminDashboard() {
               <h1 className="text-2xl font-bold text-gray-900">Blog Admin Dashboard</h1>
               <p className="text-gray-600">Manage your blog posts, categories, and media</p>
             </div>
-            <Button asChild className="bg-[#1886CD] hover:bg-[#1565A0]">
-              <a href="/blog" target="_blank" rel="noreferrer">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View Blog
-              </a>
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button variant="outline" onClick={handleSignOut} className="flex items-center gap-2 bg-transparent">
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+              <Button asChild className="bg-[#1886CD] hover:bg-[#1565A0]">
+                <a href="/blog" target="_blank" rel="noreferrer">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Blog
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -151,8 +151,23 @@ export function BlogProvider({ children }: { children: ReactNode }) {
     return posts
       .filter((post) => post.status === "Published")
       .sort((a, b) => {
-        const aTime = a.publishedAt?.toMillis() || a.createdAt.toMillis()
-        const bTime = b.publishedAt?.toMillis() || b.createdAt.toMillis()
+        // Handle both Timestamp objects and numbers (milliseconds)
+        const aTime = a.publishedAt
+          ? typeof a.publishedAt === "number"
+            ? a.publishedAt
+            : a.publishedAt.toMillis()
+          : typeof a.createdAt === "number"
+            ? a.createdAt
+            : a.createdAt.toMillis()
+
+        const bTime = b.publishedAt
+          ? typeof b.publishedAt === "number"
+            ? b.publishedAt
+            : b.publishedAt.toMillis()
+          : typeof b.createdAt === "number"
+            ? b.createdAt
+            : b.createdAt.toMillis()
+
         return bTime - aTime
       })
   }

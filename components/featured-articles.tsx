@@ -16,7 +16,16 @@ export function FeaturedArticles() {
     async function fetchPosts() {
       try {
         const blogPosts = await getBlogPosts()
-        setPosts(blogPosts.slice(0, 3)) // Get first 3 posts
+
+        // Convert Firestore timestamps to serializable format before setting state
+        const serializedPosts = blogPosts.slice(0, 3).map((post) => ({
+          ...post,
+          createdAt: post.createdAt.toMillis(),
+          updatedAt: post.updatedAt.toMillis(),
+          publishedAt: post.publishedAt ? post.publishedAt.toMillis() : null,
+        }))
+
+        setPosts(serializedPosts)
       } catch (error) {
         console.error("Error loading posts:", error)
       } finally {
@@ -69,7 +78,8 @@ export function FeaturedArticles() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {posts.map((post) => {
-            const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
+            // Format the date from milliseconds
+            const publishedDate = post.publishedAt ? new Date(post.publishedAt) : new Date(post.createdAt)
             const formattedDate = publishedDate.toLocaleDateString("en-US", {
               year: "numeric",
               month: "short",

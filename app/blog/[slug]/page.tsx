@@ -15,7 +15,15 @@ export default async function BlogPost({ params }: { params: { slug: string } })
     notFound()
   }
 
-  const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
+  // Safely handle Firestore timestamp
+  const publishedDate = post.publishedAt
+    ? typeof post.publishedAt === "object"
+      ? post.publishedAt.toDate()
+      : new Date(post.publishedAt)
+    : typeof post.createdAt === "object"
+      ? post.createdAt.toDate()
+      : new Date(post.createdAt)
+
   const formattedDate = publishedDate.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
