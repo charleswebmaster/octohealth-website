@@ -24,7 +24,7 @@ export function BenefitsSection() {
   ]
 
   return (
-    <section className="py-20 bg-[#343E8F]">
+    <section className="py-20 bg-[#1886CD]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Benefits Of Our AI-Powered Solutions</h2>
@@ -34,8 +34,8 @@ export function BenefitsSection() {
           {benefits.map((benefit, index) => (
             <Card key={index} className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-[#343E8F]/10 rounded-xl flex items-center justify-center mb-4">
-                  <benefit.icon className="h-6 w-6 text-[#343E8F]" />
+                <div className="w-12 h-12 bg-[#1886CD]/10 rounded-xl flex items-center justify-center mb-4">
+                  <benefit.icon className="h-6 w-6 text-[#1886CD]" />
                 </div>
                 <CardTitle className="text-xl font-semibold text-gray-900">{benefit.title}</CardTitle>
               </CardHeader>

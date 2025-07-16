@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Blog posts - public read, no write access from client
+    match /blogPosts/{document} {
+      allow read: if resource.data.status == "Published";
+      allow write: if false; // All writes should be done through admin interface with proper authentication
+    }
+    
+    // Categories - public read, no write access from client  
+    match /categories/{document} {
+      allow read: if true;
+      allow write: if false; // All writes should be done through admin interface with proper authentication
+    }
+    
+    // Admin access (you'll need to implement authentication for admin users)
+    // For now, all writes are blocked from client-side
+    // You should implement server-side functions or use Firebase Admin SDK for writes
+  }
+}

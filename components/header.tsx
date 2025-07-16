@@ -15,22 +15,28 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/images/logo.jpeg" alt="OctoHealth Logo" width={180} height={40} className="h-11 w-auto" />
+              <Image
+                src="/images/octohealth-logo.jpeg"
+                alt="OctoHealth Logo"
+                width={180}
+                height={40}
+                className="h-11 w-auto"
+              />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
+            <Link href="/" className="text-gray-700 hover:text-[#1886CD] font-medium transition-colors">
               Home
             </Link>
-            <Link href="#product" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
+            <Link href="#product" className="text-gray-700 hover:text-[#1886CD] font-medium transition-colors">
               Product
             </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
+            <Link href="/blog" className="text-gray-700 hover:text-[#1886CD] font-medium transition-colors">
               Blog
             </Link>
-            <Button asChild className="bg-[#343E8F] hover:bg-[#2a3270] text-white rounded-lg px-6">
+            <Button asChild className="bg-[#1886CD] hover:bg-[#1565A0] text-white rounded-lg px-6">
               <a href="mailto:info@octohealth.com">Request Demo</a>
             </Button>
           </nav>
@@ -49,27 +55,27 @@ export function Header() {
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white">
               <Link
                 href="/"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1886CD] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 href="#product"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1886CD] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Product
               </Link>
               <Link
                 href="/blog"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1886CD] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Blog
               </Link>
               <div className="px-3 py-2">
-                <Button asChild className="w-full bg-[#343E8F] hover:bg-[#2a3270] text-white">
+                <Button asChild className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white">
                   <a href="mailto:info@octohealth.com">Request Demo</a>
                 </Button>
               </div>

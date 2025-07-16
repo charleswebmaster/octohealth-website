@@ -72,10 +72,10 @@ export function ProblemSolutionSection() {
               {solutions.map((solution, index) => (
                 <div
                   key={index}
-                  className="flex items-start space-x-4 p-3 rounded-lg hover:bg-[#343E8F]/5 transition-colors"
+                  className="flex items-start space-x-4 p-3 rounded-lg hover:bg-[#1886CD]/5 transition-colors"
                 >
                   <div className="flex-shrink-0">
-                    <CheckCircle className="h-6 w-6 text-[#343E8F] mt-1" />
+                    <CheckCircle className="h-6 w-6 text-[#1886CD] mt-1" />
                   </div>
                   <p className="text-gray-700 font-medium leading-snug">{solution}</p>
                 </div>

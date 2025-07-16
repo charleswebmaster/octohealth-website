@@ -10,7 +10,7 @@ export function HeroSection() {
             <div className="space-y-8">
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Run a Smarter HMO with <span className="text-[#343E8F]">Africa's Leading Health ERP</span>
+                  Run a Smarter HMO with <span className="text-[#1886CD]">Africa's Leading Health ERP</span>
                 </h1>
                 <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
                   Power your HMO with an all-in-one ERP that simplifies everything from claims and underwriting to
@@ -20,14 +20,14 @@ export function HeroSection() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
-                  className="bg-[#343E8F] hover:bg-[#2a3270] text-white text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all"
+                  className="bg-[#1886CD] hover:bg-[#1565A0] text-white text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all"
                 >
                   <a href="mailto:info@octohealth.com">Request a Demo</a>
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-4 border-[#343E8F] text-[#343E8F] hover:bg-[#343E8F] hover:text-white transition-all bg-white rounded-lg"
+                  className="text-lg px-8 py-4 border-[#1886CD] text-[#1886CD] hover:bg-[#1886CD] hover:text-white transition-all bg-white rounded-lg"
                 >
                   Product Tour
                 </Button>
@@ -36,20 +36,20 @@ export function HeroSection() {
               {/* Trust indicators */}
               <div className="flex items-center space-x-8 pt-8">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-[#343E8F]/10 rounded-full flex items-center justify-center">
-                    <span className="text-[#343E8F] font-bold text-sm">ISO</span>
+                  <div className="w-8 h-8 bg-[#1886CD]/10 rounded-full flex items-center justify-center">
+                    <span className="text-[#1886CD] font-bold text-sm">ISO</span>
                   </div>
                   <span className="text-sm text-gray-600">ISO Certified</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-[#343E8F]/10 rounded-full flex items-center justify-center">
-                    <span className="text-[#343E8F] font-bold text-sm">AWS</span>
+                  <div className="w-8 h-8 bg-[#1886CD]/10 rounded-full flex items-center justify-center">
+                    <span className="text-[#1886CD] font-bold text-sm">AWS</span>
                   </div>
                   <span className="text-sm text-gray-600">AWS Hosted</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-[#343E8F]/10 rounded-full flex items-center justify-center">
-                    <span className="text-[#343E8F] font-bold text-sm">24/7</span>
+                  <div className="w-8 h-8 bg-[#1886CD]/10 rounded-full flex items-center justify-center">
+                    <span className="text-[#1886CD] font-bold text-sm">24/7</span>
                   </div>
                   <span className="text-sm text-gray-600">Support</span>
                 </div>
@@ -70,8 +70,8 @@ export function HeroSection() {
               </div>
 
               {/* Floating elements for visual interest */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#343E8F] rounded-full animate-bounce z-30"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-purple-500 rounded-full animate-pulse z-30"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#1886CD] rounded-full animate-bounce z-30"></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-[#EA3056] rounded-full animate-pulse z-30"></div>
             </div>
           </div>
         </div>

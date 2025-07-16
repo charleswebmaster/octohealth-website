@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,13 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, Upload, Eye, Save } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, Save, ExternalLink } from "lucide-react"
 import { useBlog } from "@/contexts/blog-context"
 
 export default function AdminDashboard() {
   const {
     posts,
     categories,
+    loading,
     addPost,
     updatePost,
     deletePost,
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
     addCategory,
     updateCategory,
     deleteCategory,
+    refreshData,
   } = useBlog()
 
   const [newPost, setNewPost] = useState({
@@ -38,18 +40,28 @@ export default function AdminDashboard() {
   const [newCategory, setNewCategory] = useState("")
   const [viewingPost, setViewingPost] = useState<any>(null)
 
-  const handleAddPost = () => {
+  useEffect(() => {
+    refreshData()
+  }, [])
+
+  const handleAddPost = async () => {
     if (newPost.title && newPost.content && newPost.category) {
-      addPost({
-        title: newPost.title,
-        content: newPost.content,
-        excerpt: newPost.excerpt,
-        category: newPost.category,
-        status: "Draft",
-        image: newPost.image || "/images/blog-1.png",
-        readTime: "5 min read", // This will be calculated in the context
-      })
-      setNewPost({ title: "", content: "", category: "", excerpt: "", image: "", status: "Draft" })
+      try {
+        await addPost({
+          title: newPost.title,
+          content: newPost.content,
+          excerpt: newPost.excerpt,
+          category: newPost.category,
+          status: "Draft",
+          image: newPost.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
+          slug: "",
+          readTime: "",
+        })
+        setNewPost({ title: "", content: "", category: "", excerpt: "", image: "", status: "Draft" })
+      } catch (error) {
+        console.error("Error adding post:", error)
+        alert("Error adding post. Please try again.")
+      }
     }
   }
 
@@ -57,16 +69,26 @@ export default function AdminDashboard() {
     setEditingPost(post)
   }
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingPost) {
-      updatePost(editingPost.id, editingPost)
-      setEditingPost(null)
+      try {
+        await updatePost(editingPost.id, editingPost)
+        setEditingPost(null)
+      } catch (error) {
+        console.error("Error updating post:", error)
+        alert("Error updating post. Please try again.")
+      }
     }
   }
 
-  const handleDeletePost = (id: number) => {
+  const handleDeletePost = async (id: string) => {
     if (confirm("Are you sure you want to delete this post?")) {
-      deletePost(id)
+      try {
+        await deletePost(id)
+      } catch (error) {
+        console.error("Error deleting post:", error)
+        alert("Error deleting post. Please try again.")
+      }
     }
   }
 
@@ -74,14 +96,24 @@ export default function AdminDashboard() {
     setViewingPost(post)
   }
 
-  const handlePublishPost = (id: number) => {
-    publishPost(id)
+  const handlePublishPost = async (id: string) => {
+    try {
+      await publishPost(id)
+    } catch (error) {
+      console.error("Error publishing post:", error)
+      alert("Error publishing post. Please try again.")
+    }
   }
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (newCategory.trim()) {
-      addCategory(newCategory.trim())
-      setNewCategory("")
+      try {
+        await addCategory(newCategory.trim())
+        setNewCategory("")
+      } catch (error) {
+        console.error("Error adding category:", error)
+        alert("Error adding category. Please try again.")
+      }
     }
   }
 
@@ -89,17 +121,38 @@ export default function AdminDashboard() {
     setEditingCategory(category)
   }
 
-  const handleSaveCategoryEdit = () => {
+  const handleSaveCategoryEdit = async () => {
     if (editingCategory) {
-      updateCategory(editingCategory.id, editingCategory)
-      setEditingCategory(null)
+      try {
+        await updateCategory(editingCategory.id, editingCategory)
+        setEditingCategory(null)
+      } catch (error) {
+        console.error("Error updating category:", error)
+        alert("Error updating category. Please try again.")
+      }
     }
   }
 
-  const handleDeleteCategory = (id: number) => {
+  const handleDeleteCategory = async (id: string) => {
     if (confirm("Are you sure you want to delete this category?")) {
-      deleteCategory(id)
+      try {
+        await deleteCategory(id)
+      } catch (error) {
+        console.error("Error deleting category:", error)
+        alert("Error deleting category. Please try again.")
+      }
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1886CD] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -111,8 +164,9 @@ export default function AdminDashboard() {
               <h1 className="text-2xl font-bold text-gray-900">Blog Admin Dashboard</h1>
               <p className="text-gray-600">Manage your blog posts, categories, and media</p>
             </div>
-            <Button asChild className="bg-[#343E8F] hover:bg-[#2a3270]">
+            <Button asChild className="bg-[#1886CD] hover:bg-[#1565A0]">
               <a href="/blog" target="_blank" rel="noreferrer">
+                <ExternalLink className="h-4 w-4 mr-2" />
                 View Blog
               </a>
             </Button>
@@ -122,10 +176,9 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="posts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="posts">Posts ({posts.length})</TabsTrigger>
             <TabsTrigger value="categories">Categories ({categories.length})</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="new-post">New Post</TabsTrigger>
           </TabsList>
 
@@ -139,139 +192,158 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid gap-4">
-              {posts.map((post) => (
-                <Card key={post.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600">
-                          <Badge variant="outline">{post.category}</Badge>
-                          <span>{post.date}</span>
-                          <Badge variant={post.status === "Published" ? "default" : "secondary"}>{post.status}</Badge>
-                          <span>{post.readTime}</span>
+              {posts.map((post) => {
+                const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
+                const formattedDate = publishedDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+
+                return (
+                  <Card key={post.id}>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <Badge variant="outline">{post.category}</Badge>
+                            <span>{formattedDate}</span>
+                            <Badge variant={post.status === "Published" ? "default" : "secondary"}>{post.status}</Badge>
+                            <span>{post.readTime}</span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => handleViewPost(post)}>
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>{post.title}</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <Badge>{post.category}</Badge>
-                                <span>{post.date}</span>
-                                <Badge variant={post.status === "Published" ? "default" : "secondary"}>
-                                  {post.status}
-                                </Badge>
-                              </div>
-                              <p className="text-gray-600 italic">{post.excerpt}</p>
-                              <div className="prose max-w-none">
-                                <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => handleEditPost(post)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>Edit Post</DialogTitle>
-                            </DialogHeader>
-                            {editingPost && (
+                        <div className="flex items-center space-x-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" onClick={() => handleViewPost(post)}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>{post.title}</DialogTitle>
+                              </DialogHeader>
                               <div className="space-y-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Title</label>
-                                  <Input
-                                    value={editingPost.title}
-                                    onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                  <Badge>{post.category}</Badge>
+                                  <span>{formattedDate}</span>
+                                  <Badge variant={post.status === "Published" ? "default" : "secondary"}>
+                                    {post.status}
+                                  </Badge>
+                                </div>
+                                {post.image && (
+                                  <img
+                                    src={post.image || "/placeholder.svg"}
+                                    alt={post.title}
+                                    className="w-full h-48 object-cover rounded-lg"
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Category</label>
-                                  <select
-                                    className="w-full p-2 border border-gray-300 rounded-md"
-                                    value={editingPost.category}
-                                    onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
-                                  >
-                                    {categories.map((cat) => (
-                                      <option key={cat.id} value={cat.name}>
-                                        {cat.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Excerpt</label>
-                                  <Textarea
-                                    value={editingPost.excerpt}
-                                    onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Featured Image URL</label>
-                                  <Input
-                                    value={editingPost.image}
-                                    onChange={(e) => setEditingPost({ ...editingPost, image: e.target.value })}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Content</label>
-                                  <Textarea
-                                    rows={10}
-                                    value={editingPost.content}
-                                    onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
-                                  />
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button onClick={handleSaveEdit} className="bg-[#343E8F] hover:bg-[#2a3270]">
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save Changes
-                                  </Button>
-                                  <Button variant="outline" onClick={() => setEditingPost(null)}>
-                                    Cancel
-                                  </Button>
+                                )}
+                                <p className="text-gray-600 italic">{post.excerpt}</p>
+                                <div className="prose max-w-none">
+                                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
                                 </div>
                               </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
+                            </DialogContent>
+                          </Dialog>
 
-                        {post.status === "Draft" && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" onClick={() => handleEditPost(post)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>Edit Post</DialogTitle>
+                              </DialogHeader>
+                              {editingPost && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Title</label>
+                                    <Input
+                                      value={editingPost.title}
+                                      onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Category</label>
+                                    <select
+                                      className="w-full p-2 border border-gray-300 rounded-md"
+                                      value={editingPost.category}
+                                      onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                                    >
+                                      {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.name}>
+                                          {cat.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Excerpt</label>
+                                    <Textarea
+                                      value={editingPost.excerpt}
+                                      onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Featured Image URL</label>
+                                    <Input
+                                      value={editingPost.image}
+                                      onChange={(e) => setEditingPost({ ...editingPost, image: e.target.value })}
+                                      placeholder="https://example.com/image.jpg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">
+                                      Content (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
+                                    </label>
+                                    <Textarea
+                                      rows={10}
+                                      value={editingPost.content}
+                                      onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button onClick={handleSaveEdit} className="bg-[#1886CD] hover:bg-[#1565A0]">
+                                      <Save className="h-4 w-4 mr-2" />
+                                      Save Changes
+                                    </Button>
+                                    <Button variant="outline" onClick={() => setEditingPost(null)}>
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+
+                          {post.status === "Draft" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handlePublishPost(post.id)}
+                              className="text-green-600 hover:text-green-700"
+                            >
+                              Publish
+                            </Button>
+                          )}
+
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePublishPost(post.id)}
-                            className="text-green-600 hover:text-green-700"
+                            onClick={() => handleDeletePost(post.id)}
+                            className="text-red-600 hover:text-red-700"
                           >
-                            Publish
+                            <Trash2 className="h-4 w-4" />
                           </Button>
-                        )}
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeletePost(post.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </TabsContent>
 
@@ -291,7 +363,7 @@ export default function AdminDashboard() {
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                   />
-                  <Button onClick={handleAddCategory} className="bg-[#343E8F] hover:bg-[#2a3270]">
+                  <Button onClick={handleAddCategory} className="bg-[#1886CD] hover:bg-[#1565A0]">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Category
                   </Button>
@@ -332,7 +404,7 @@ export default function AdminDashboard() {
                                   />
                                 </div>
                                 <div className="flex gap-2">
-                                  <Button onClick={handleSaveCategoryEdit} className="bg-[#343E8F] hover:bg-[#2a3270]">
+                                  <Button onClick={handleSaveCategoryEdit} className="bg-[#1886CD] hover:bg-[#1565A0]">
                                     <Save className="h-4 w-4 mr-2" />
                                     Save Changes
                                   </Button>
@@ -354,38 +426,6 @@ export default function AdminDashboard() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="media" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Media Library</h2>
-              <Button className="bg-[#343E8F] hover:bg-[#2a3270]">
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Media
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                <Card key={item} className="overflow-hidden">
-                  <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">Image {item}</span>
-                  </div>
-                  <CardContent className="p-4">
-                    <p className="text-sm font-medium">blog-image-{item}.jpg</p>
-                    <p className="text-xs text-gray-600">2.4 MB</p>
-                    <div className="flex gap-1 mt-2">
-                      <Button variant="outline" size="sm" className="text-xs bg-transparent">
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-xs text-red-600 bg-transparent">
-                        Delete
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -435,28 +475,36 @@ export default function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Featured Image URL</label>
                   <Input
-                    placeholder="Enter image URL"
+                    placeholder="https://example.com/image.jpg"
                     value={newPost.image}
                     onChange={(e) => setNewPost({ ...newPost, image: e.target.value })}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Use external image URLs (e.g., Unsplash, Cloudinary, etc.)
+                  </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Content</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Content (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
+                  </label>
                   <Textarea
-                    placeholder="Write your post content here..."
+                    placeholder="Write your post content here... You can use HTML tags including <img> for images."
                     rows={10}
                     value={newPost.content}
                     onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    For images in content, use: &lt;img src="https://example.com/image.jpg" alt="Description"
+                    className="w-full rounded-lg my-4" /&gt;
+                  </p>
                 </div>
 
                 <div className="flex gap-4">
-                  <Button onClick={handleAddPost} className="bg-[#343E8F] hover:bg-[#2a3270]">
+                  <Button onClick={handleAddPost} className="bg-[#1886CD] hover:bg-[#1565A0]">
                     <Save className="h-4 w-4 mr-2" />
                     Save as Draft
                   </Button>
-                  <Button variant="outline">Preview</Button>
                 </div>
               </CardContent>
             </Card>

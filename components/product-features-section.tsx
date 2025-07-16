@@ -1,8 +1,17 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Shield, CreditCard, Users, Pill, Phone, Activity, Smartphone, Globe, Cloud } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 
 export function ProductFeaturesSection() {
+  const [activeTab, setActiveTab] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isUserInteracting, setIsUserInteracting] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const tabsContainerRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
+
   const features = [
     {
       id: "underwriting",
@@ -131,12 +140,66 @@ export function ProductFeaturesSection() {
     },
   ]
 
+  // Auto-play functionality
+  useEffect(() => {
+    if (isAutoPlaying && !isUserInteracting) {
+      intervalRef.current = setInterval(() => {
+        setActiveTab((prev) => (prev + 1) % features.length)
+      }, 5000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [isAutoPlaying, isUserInteracting, features.length])
+
+  // Handle manual tab selection
+  const handleTabClick = (index: number) => {
+    setActiveTab(index)
+    setIsUserInteracting(true)
+    setIsAutoPlaying(false)
+
+    // Resume auto-play after 10 seconds of inactivity
+    setTimeout(() => {
+      setIsUserInteracting(false)
+      setIsAutoPlaying(true)
+    }, 10000)
+  }
+
+  // Scroll active tab into view without affecting page scroll
+  useEffect(() => {
+    if (tabsContainerRef.current && !isUserInteracting) {
+      const activeTabElement = tabsContainerRef.current.children[activeTab] as HTMLElement
+      if (activeTabElement) {
+        // Only scroll the tabs container, not the entire page
+        const container = tabsContainerRef.current
+        const tabRect = activeTabElement.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+
+        if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
+          activeTabElement.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          })
+        }
+      }
+    }
+  }, [activeTab, isUserInteracting])
+
+  const ActiveFeatureIcon = features[activeTab].icon
+  const ActiveFeatureTitle = features[activeTab].title
+  const ActiveFeatureDescription = features[activeTab].description
+  const ActiveFeatureDetails = features[activeTab].details
+
   return (
-    <section id="product" className="py-20 bg-gradient-to-br from-white via-[#343E8F]/5 to-white">
+    <section id="product" className="py-20 bg-gradient-to-br from-white via-[#1886CD]/5 to-white" ref={sectionRef}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-            Comprehensive <span className="text-[#343E8F]">Product Features</span>
+            Comprehensive <span className="text-[#1886CD]">Product Features</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Every module designed specifically for African HMOs, with deep functionality to handle complex healthcare
@@ -144,47 +207,71 @@ export function ProductFeaturesSection() {
           </p>
         </div>
 
-        <Tabs defaultValue="underwriting" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 mb-8 bg-white shadow-lg rounded-xl p-2 gap-1">
-            {features.map((feature) => (
-              <TabsTrigger
-                key={feature.id}
-                value={feature.id}
-                className="text-xs lg:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis min-w-0"
-              >
-                <span className="truncate">{feature.title}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="w-full">
+          {/* Horizontal scrollable tabs */}
+          <div className="relative mb-8">
+            <div
+              ref={tabsContainerRef}
+              className="flex overflow-x-auto scrollbar-hide gap-2 pb-4 bg-white shadow-lg rounded-xl p-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              onMouseEnter={() => setIsUserInteracting(true)}
+              onMouseLeave={() => {
+                setTimeout(() => setIsUserInteracting(false), 1000)
+              }}
+            >
+              {features.map((feature, index) => (
+                <button
+                  key={feature.id}
+                  onClick={() => handleTabClick(index)}
+                  className={`flex-shrink-0 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap ${
+                    activeTab === index
+                      ? "bg-[#1886CD] text-white shadow-md"
+                      : "text-gray-600 hover:text-[#1886CD] hover:bg-[#1886CD]/10"
+                  }`}
+                >
+                  {feature.title}
+                </button>
+              ))}
+            </div>
 
-          {features.map((feature) => (
-            <TabsContent key={feature.id} value={feature.id}>
-              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-                <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-[#343E8F]/10 rounded-xl">
-                      <feature.icon className="h-8 w-8 text-[#343E8F]" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl">{feature.title}</CardTitle>
-                      <CardDescription className="text-lg">{feature.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {feature.details.map((detail, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-[#343E8F] rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+            {/* Progress indicator */}
+            <div className="flex justify-center mt-4 space-x-2">
+              {features.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                    activeTab === index ? "bg-[#1886CD]" : "bg-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Tab content */}
+          <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#1886CD]/10 rounded-xl">
+                  <ActiveFeatureIcon className="h-8 w-8 text-[#1886CD]" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl">{ActiveFeatureTitle}</CardTitle>
+                  <CardDescription className="text-lg">{ActiveFeatureDescription}</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {ActiveFeatureDetails.map((detail, index) => (
+                  <li key={index} className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[#1886CD] rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-gray-700">{detail}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Standards Section */}
         <div className="mt-20">
@@ -193,8 +280,8 @@ export function ProductFeaturesSection() {
             {standards.map((standard, index) => (
               <Card key={index} className="text-center">
                 <CardHeader>
-                  <div className="mx-auto p-4 bg-[#343E8F]/10 rounded-2xl w-fit">
-                    <standard.icon className="h-10 w-10 text-[#343E8F]" />
+                  <div className="mx-auto p-4 bg-[#1886CD]/10 rounded-2xl w-fit">
+                    <standard.icon className="h-10 w-10 text-[#1886CD]" />
                   </div>
                   <CardTitle className="text-xl">{standard.title}</CardTitle>
                 </CardHeader>

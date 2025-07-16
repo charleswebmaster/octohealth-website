@@ -56,7 +56,7 @@ export function AfricanAdvantageSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-            The <span className="text-[#343E8F]">African Advantage</span>
+            The <span className="text-[#1886CD]">African Advantage</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Built by Africans, for Africans. OctoHealth ERP understands the unique challenges and opportunities in
@@ -71,7 +71,7 @@ export function AfricanAdvantageSection() {
               className="text-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white border-0 shadow-lg"
             >
               <CardHeader>
-                <div className="mx-auto p-4 bg-[#343E8F] rounded-2xl w-fit shadow-lg">
+                <div className="mx-auto p-4 bg-[#1886CD] rounded-2xl w-fit shadow-lg">
                   <advantage.icon className="h-8 w-8 text-white" />
                 </div>
                 <CardTitle className="text-xl">{advantage.title}</CardTitle>
@@ -84,9 +84,9 @@ export function AfricanAdvantageSection() {
         </div>
 
         <div className="mt-16 text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-xl max-w-4xl mx-auto border border-[#343E8F]/10">
+          <div className="bg-white rounded-2xl p-8 shadow-xl max-w-4xl mx-auto border border-[#1886CD]/10">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Trusted by <span className="text-[#343E8F]">Leading African HMOs</span>
+              Trusted by <span className="text-[#1886CD]">Leading African HMOs</span>
             </h3>
             <p className="text-lg text-gray-600 mb-8">
               Join the growing network of African healthcare organizations that trust OctoHealth ERP to power their
@@ -95,7 +95,7 @@ export function AfricanAdvantageSection() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
               {/* Placeholder for client logos */}
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Client Logo</span>
+               {/* <span className="text-gray-500 text-sm">Client Logo</span> */}
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
                 <Image
@@ -116,7 +116,7 @@ export function AfricanAdvantageSection() {
                 />
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Client Logo</span>
+                {/* <span className="text-gray-500 text-sm">Client Logo</span> */}
               </div>
             </div>
           </div>

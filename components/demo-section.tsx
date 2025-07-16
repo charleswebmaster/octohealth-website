@@ -13,14 +13,14 @@ export function DemoSection() {
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="text-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 shadow-lg">
             <CardContent className="p-8">
-              <div className="mx-auto p-4 bg-[#343E8F]/10 rounded-2xl w-fit">
-                <Calendar className="h-8 w-8 text-[#343E8F]" />
+              <div className="mx-auto p-4 bg-[#1886CD]/10 rounded-2xl w-fit">
+                <Calendar className="h-8 w-8 text-[#1886CD]" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Schedule a Demo</h3>
               <p className="text-gray-600 mb-4">
                 See OctoHealth ERP in action with a personalized demo tailored to your HMO's needs.
               </p>
-              <Button className="w-full bg-[#343E8F] hover:bg-[#2a3270] shadow-lg hover:shadow-xl transition-all">
+              <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
                 <a href="mailto:info@octohealth.com">Book Demo</a>
               </Button>
             </CardContent>
@@ -35,7 +35,7 @@ export function DemoSection() {
               <p className="text-gray-600 mb-4">
                 Get answers about features, pricing, implementation, and how OctoHealth fits your workflow.
               </p>
-              <Button variant="outline" className="w-full bg-transparent">
+              <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
                 <a href="mailto:info@octohealth.com">Contact Us</a>
               </Button>
             </CardContent>
@@ -50,7 +50,7 @@ export function DemoSection() {
               <p className="text-gray-600 mb-4">
                 Connect with our healthcare technology experts to discuss your specific requirements.
               </p>
-              <Button variant="outline" className="w-full bg-transparent">
+              <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
                 <a href="mailto:info@octohealth.com">Get in Touch</a>
               </Button>
             </CardContent>

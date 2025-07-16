@@ -52,7 +52,7 @@ export function BlogCategories() {
                           <IconComponent className="h-6 w-6" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg group-hover:text-[#343E8F] transition-colors">
+                          <CardTitle className="text-lg group-hover:text-[#1886CD] transition-colors">
                             {category.name}
                           </CardTitle>
                           <Badge variant="outline" className="text-xs mt-1">
@@ -76,7 +76,7 @@ export function BlogCategories() {
                       </p>
                       <Link
                         href="#"
-                        className="inline-flex items-center text-[#343E8F] hover:text-[#2a3270] font-medium transition-colors"
+                        className="inline-flex items-center text-[#1886CD] hover:text-[#1565A0] font-medium transition-colors"
                       >
                         Explore Category
                         <ArrowRight className="h-4 w-4 ml-1" />
@@ -111,29 +111,6 @@ export function BlogCategories() {
               ) : (
                 <p className="text-gray-600">No recent articles available.</p>
               )}
-            </div>
-
-            <div className="mt-8">
-              <Card className="bg-gradient-to-br from-[#343E8F]/10 to-purple-50 border-[#343E8F]/20 shadow-lg">
-                <CardContent className="p-6 text-center">
-                  <h4 className="font-semibold text-gray-900 mb-2">Never Miss an Update</h4>
-                  <p className="text-sm text-gray-600 mb-4">Get weekly insights delivered to your inbox</p>
-                  <Link
-                    href="#newsletter-section"
-                    className="inline-flex items-center text-[#343E8F] hover:text-[#2a3270] font-medium transition-colors"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      const newsletterSection = document.getElementById("newsletter-section")
-                      if (newsletterSection) {
-                        newsletterSection.scrollIntoView({ behavior: "smooth" })
-                      }
-                    }}
-                  >
-                    Subscribe Now
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </Link>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

@@ -11,13 +11,15 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <Image
-              src="/images/logo.jpeg"
-              alt="OctoHealth Logo"
-              width={180}
-              height={40}
-              className="h-11 w-auto opacity-90"
-            />
+            <div className="bg-white rounded-lg p-2 w-fit">
+              <Image
+                src="/images/octohealth-logo.jpeg"
+                alt="OctoHealth Logo"
+                width={160}
+                height={36}
+                className="h-9 w-auto"
+              />
+            </div>
             <p className="text-gray-400">
               Africa's leading Health ERP solution for HMOs and health insurers. Transforming healthcare operations
               across the continent.
@@ -110,9 +112,9 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Your email"
-                className="bg-gray-800 border-gray-700 text-white focus:border-[#343E8F] placeholder:text-gray-500"
+                className="bg-gray-800 border-gray-700 text-white focus:border-[#1886CD] placeholder:text-gray-500"
               />
-              <Button className="bg-[#343E8F] hover:bg-[#2a3270] shadow-lg transition-all">Subscribe</Button>
+              <Button className="bg-[#1886CD] hover:bg-[#1565A0] shadow-lg transition-all">Subscribe</Button>
             </div>
 
             {/* Social Media Icons */}
@@ -121,28 +123,28 @@ export function Footer() {
               <div className="flex space-x-4">
                 <Link
                   href="#"
-                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#343E8F] transition-colors group"
+                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#1886CD] transition-colors group"
                   aria-label="Facebook"
                 >
                   <Facebook className="h-5 w-5 text-gray-400 group-hover:text-white" />
                 </Link>
                 <Link
                   href="#"
-                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#343E8F] transition-colors group"
+                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#1886CD] transition-colors group"
                   aria-label="Twitter"
                 >
                   <Twitter className="h-5 w-5 text-gray-400 group-hover:text-white" />
                 </Link>
                 <Link
                   href="#"
-                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#343E8F] transition-colors group"
+                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#1886CD] transition-colors group"
                   aria-label="Instagram"
                 >
                   <Instagram className="h-5 w-5 text-gray-400 group-hover:text-white" />
                 </Link>
                 <Link
                   href="#"
-                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#343E8F] transition-colors group"
+                  className="p-2 bg-gray-800 rounded-lg hover:bg-[#1886CD] transition-colors group"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="h-5 w-5 text-gray-400 group-hover:text-white" />

@@ -23,27 +23,33 @@ export function BlogHeader() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/images/logo.jpeg" alt="OctoHealth Logo" width={180} height={40} className="h-11 w-auto" />
+              <Image
+                src="/images/octohealth-logo.jpeg"
+                alt="OctoHealth Logo"
+                width={180}
+                height={40}
+                className="h-11 w-auto"
+              />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors">
+            <Link href="/" className="text-gray-700 hover:text-[#1886CD] font-medium transition-colors">
               Home
             </Link>
-            <Link href="/blog" className="text-[#343E8F] font-medium border-b-2 border-[#343E8F] pb-1">
+            <Link href="/blog" className="text-[#1886CD] font-medium border-b-2 border-[#1886CD] pb-1">
               Blog
             </Link>
             <button
               onClick={scrollToNewsletter}
-              className="text-gray-700 hover:text-[#343E8F] font-medium transition-colors"
+              className="text-gray-700 hover:text-[#1886CD] font-medium transition-colors"
             >
               Newsletter
             </button>
             <Button
               asChild
-              className="bg-[#343E8F] hover:bg-[#2a3270] text-white shadow-lg hover:shadow-xl transition-all"
+              className="bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all"
             >
               <Link href="/">OctoHealth ERP</Link>
             </Button>
@@ -63,26 +69,26 @@ export function BlogHeader() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 bg-white/95 backdrop-blur-md">
               <Link
                 href="/"
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium transition-colors"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1886CD] font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 href="/blog"
-                className="block px-3 py-2 text-[#343E8F] font-medium"
+                className="block px-3 py-2 text-[#1886CD] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Blog
               </Link>
               <button
                 onClick={scrollToNewsletter}
-                className="block px-3 py-2 text-gray-700 hover:text-[#343E8F] font-medium transition-colors w-full text-left"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1886CD] font-medium transition-colors w-full text-left"
               >
                 Newsletter
               </button>
               <div className="px-3 py-2">
-                <Button asChild className="w-full bg-[#343E8F] hover:bg-[#2a3270] text-white">
+                <Button asChild className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white">
                   <Link href="/">OctoHealth ERP</Link>
                 </Button>
               </div>

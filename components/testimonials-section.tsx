@@ -48,14 +48,14 @@ export function TestimonialsSection() {
               <CardContent className="p-8">
                 <div className="flex mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-[#343E8F] fill-current" />
+                    <Star key={i} className="h-5 w-5 text-[#1886CD] fill-current" />
                   ))}
                 </div>
                 <blockquote className="text-gray-700 mb-6 italic">"{testimonial.quote}"</blockquote>
                 <div className="border-t pt-4">
                   <div className="font-semibold text-gray-900">{testimonial.author}</div>
                   <div className="text-sm text-gray-600">{testimonial.title}</div>
-                  <div className="text-sm text-[#343E8F] font-medium">{testimonial.company}</div>
+                  <div className="text-sm text-[#1886CD] font-medium">{testimonial.company}</div>
                 </div>
               </CardContent>
             </Card>
@@ -63,25 +63,25 @@ export function TestimonialsSection() {
         </div>
 
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-br from-[#343E8F]/10 to-purple-50 rounded-2xl p-8 shadow-inner">
+          <div className="bg-gradient-to-br from-[#1886CD]/10 to-[#EA3056]/10 rounded-2xl p-8 shadow-inner">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Join <span className="text-[#343E8F]">50+ African HMOs</span> Already Using OctoHealth ERP
+              Join <span className="text-[#1886CD]">2 African HMOs</span> Already Using OctoHealth ERP
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="text-3xl font-bold text-[#343E8F]">50+</div>
+                <div className="text-3xl font-bold text-[#1886CD]">2</div>
                 <div className="text-sm text-gray-600">Active HMOs</div>
               </div>
               <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="text-3xl font-bold text-[#343E8F]">2M+</div>
+                <div className="text-3xl font-bold text-[#1886CD]">100K+</div>
                 <div className="text-sm text-gray-600">Members Served</div>
               </div>
               <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="text-3xl font-bold text-[#343E8F]">40%</div>
+                <div className="text-3xl font-bold text-[#1886CD]">40%</div>
                 <div className="text-sm text-gray-600">Cost Reduction</div>
               </div>
               <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="text-3xl font-bold text-[#343E8F]">99.9%</div>
+                <div className="text-3xl font-bold text-[#1886CD]">99.9%</div>
                 <div className="text-sm text-gray-600">Uptime</div>
               </div>
             </div>
