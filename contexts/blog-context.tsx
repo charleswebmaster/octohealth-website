@@ -14,6 +14,7 @@ import {
   deleteCategory,
   generateSlug,
   calculateReadTime,
+  initializeDefaultCategories,
   type BlogPost,
   type Category,
 } from "@/lib/firebase"
@@ -45,6 +46,10 @@ export function BlogProvider({ children }: { children: ReactNode }) {
   const refreshData = async () => {
     try {
       setLoading(true)
+
+      // Initialize default categories first
+      await initializeDefaultCategories()
+
       const [allPosts, allCategories] = await Promise.all([getAllBlogPosts(), getCategories()])
       setPosts(allPosts)
       setCategories(allCategories)

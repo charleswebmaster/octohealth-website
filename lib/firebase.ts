@@ -125,11 +125,17 @@ export async function addBlogPost(post: Omit<BlogPost, "id" | "createdAt" | "upd
 export async function updateBlogPost(id: string, updates: Partial<BlogPost>): Promise<void> {
   try {
     const docRef = doc(db, "blogPosts", id)
-    await updateDoc(docRef, {
+    const updateData: any = {
       ...updates,
       updatedAt: Timestamp.now(),
-      publishedAt: updates.status === "Published" ? Timestamp.now() : null,
-    })
+    }
+
+    // Set publishedAt when status changes to Published
+    if (updates.status === "Published") {
+      updateData.publishedAt = Timestamp.now()
+    }
+
+    await updateDoc(docRef, updateData)
   } catch (error) {
     console.error("Error updating blog post:", error)
     throw error
@@ -230,4 +236,29 @@ export function calculateReadTime(content: string): string {
   const wordCount = content.split(/\s+/).length
   const minutes = Math.ceil(wordCount / wordsPerMinute)
   return `${minutes} min read`
+}
+
+// Initialize default categories if they don't exist
+export async function initializeDefaultCategories(): Promise<void> {
+  try {
+    const categories = await getCategories()
+
+    if (categories.length === 0) {
+      const defaultCategories = [
+        "Operations & Efficiency",
+        "Claims & Fraud",
+        "Regulatory Compliance",
+        "Scaling & Growth",
+        "Leadership & Strategy",
+      ]
+
+      for (const categoryName of defaultCategories) {
+        await addCategory({ name: categoryName, count: 0 })
+      }
+
+      console.log("Default categories initialized")
+    }
+  } catch (error) {
+    console.error("Error initializing default categories:", error)
+  }
 }

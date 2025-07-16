@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, Eye, Save, ExternalLink } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, Save, ExternalLink, AlertCircle } from "lucide-react"
 import { useBlog } from "@/contexts/blog-context"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function AdminDashboard() {
   const {
@@ -39,29 +40,45 @@ export default function AdminDashboard() {
   const [editingCategory, setEditingCategory] = useState<any>(null)
   const [newCategory, setNewCategory] = useState("")
   const [viewingPost, setViewingPost] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   useEffect(() => {
     refreshData()
   }, [])
 
+  const showError = (message: string) => {
+    setError(message)
+    setTimeout(() => setError(null), 5000)
+  }
+
+  const showSuccess = (message: string) => {
+    setSuccess(message)
+    setTimeout(() => setSuccess(null), 3000)
+  }
+
   const handleAddPost = async () => {
-    if (newPost.title && newPost.content && newPost.category) {
-      try {
-        await addPost({
-          title: newPost.title,
-          content: newPost.content,
-          excerpt: newPost.excerpt,
-          category: newPost.category,
-          status: "Draft",
-          image: newPost.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
-          slug: "",
-          readTime: "",
-        })
-        setNewPost({ title: "", content: "", category: "", excerpt: "", image: "", status: "Draft" })
-      } catch (error) {
-        console.error("Error adding post:", error)
-        alert("Error adding post. Please try again.")
-      }
+    if (!newPost.title || !newPost.content || !newPost.category) {
+      showError("Please fill in all required fields (title, content, category)")
+      return
+    }
+
+    try {
+      await addPost({
+        title: newPost.title,
+        content: newPost.content,
+        excerpt: newPost.excerpt,
+        category: newPost.category,
+        status: "Draft",
+        image: newPost.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
+        slug: "",
+        readTime: "",
+      })
+      setNewPost({ title: "", content: "", category: "", excerpt: "", image: "", status: "Draft" })
+      showSuccess("Post created successfully!")
+    } catch (error) {
+      console.error("Error adding post:", error)
+      showError("Failed to create post. Please try again.")
     }
   }
 
@@ -70,25 +87,27 @@ export default function AdminDashboard() {
   }
 
   const handleSaveEdit = async () => {
-    if (editingPost) {
-      try {
-        await updatePost(editingPost.id, editingPost)
-        setEditingPost(null)
-      } catch (error) {
-        console.error("Error updating post:", error)
-        alert("Error updating post. Please try again.")
-      }
+    if (!editingPost) return
+
+    try {
+      await updatePost(editingPost.id, editingPost)
+      setEditingPost(null)
+      showSuccess("Post updated successfully!")
+    } catch (error) {
+      console.error("Error updating post:", error)
+      showError("Failed to update post. Please try again.")
     }
   }
 
   const handleDeletePost = async (id: string) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      try {
-        await deletePost(id)
-      } catch (error) {
-        console.error("Error deleting post:", error)
-        alert("Error deleting post. Please try again.")
-      }
+    if (!confirm("Are you sure you want to delete this post?")) return
+
+    try {
+      await deletePost(id)
+      showSuccess("Post deleted successfully!")
+    } catch (error) {
+      console.error("Error deleting post:", error)
+      showError("Failed to delete post. Please try again.")
     }
   }
 
@@ -99,21 +118,26 @@ export default function AdminDashboard() {
   const handlePublishPost = async (id: string) => {
     try {
       await publishPost(id)
+      showSuccess("Post published successfully!")
     } catch (error) {
       console.error("Error publishing post:", error)
-      alert("Error publishing post. Please try again.")
+      showError("Failed to publish post. Please try again.")
     }
   }
 
   const handleAddCategory = async () => {
-    if (newCategory.trim()) {
-      try {
-        await addCategory(newCategory.trim())
-        setNewCategory("")
-      } catch (error) {
-        console.error("Error adding category:", error)
-        alert("Error adding category. Please try again.")
-      }
+    if (!newCategory.trim()) {
+      showError("Please enter a category name")
+      return
+    }
+
+    try {
+      await addCategory(newCategory.trim())
+      setNewCategory("")
+      showSuccess("Category added successfully!")
+    } catch (error) {
+      console.error("Error adding category:", error)
+      showError("Failed to add category. Please try again.")
     }
   }
 
@@ -122,25 +146,27 @@ export default function AdminDashboard() {
   }
 
   const handleSaveCategoryEdit = async () => {
-    if (editingCategory) {
-      try {
-        await updateCategory(editingCategory.id, editingCategory)
-        setEditingCategory(null)
-      } catch (error) {
-        console.error("Error updating category:", error)
-        alert("Error updating category. Please try again.")
-      }
+    if (!editingCategory) return
+
+    try {
+      await updateCategory(editingCategory.id, editingCategory)
+      setEditingCategory(null)
+      showSuccess("Category updated successfully!")
+    } catch (error) {
+      console.error("Error updating category:", error)
+      showError("Failed to update category. Please try again.")
     }
   }
 
   const handleDeleteCategory = async (id: string) => {
-    if (confirm("Are you sure you want to delete this category?")) {
-      try {
-        await deleteCategory(id)
-      } catch (error) {
-        console.error("Error deleting category:", error)
-        alert("Error deleting category. Please try again.")
-      }
+    if (!confirm("Are you sure you want to delete this category?")) return
+
+    try {
+      await deleteCategory(id)
+      showSuccess("Category deleted successfully!")
+    } catch (error) {
+      console.error("Error deleting category:", error)
+      showError("Failed to delete category. Please try again.")
     }
   }
 
@@ -175,6 +201,21 @@ export default function AdminDashboard() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Error/Success Messages */}
+        {error && (
+          <Alert className="mb-6 border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {success && (
+          <Alert className="mb-6 border-green-200 bg-green-50">
+            <AlertCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">{success}</AlertDescription>
+          </Alert>
+        )}
+
         <Tabs defaultValue="posts" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="posts">Posts ({posts.length})</TabsTrigger>
@@ -439,7 +480,7 @@ export default function AdminDashboard() {
             <Card>
               <CardContent className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Title</label>
+                  <label className="block text-sm font-medium mb-2">Title *</label>
                   <Input
                     placeholder="Enter post title"
                     value={newPost.title}
@@ -448,7 +489,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Category</label>
+                  <label className="block text-sm font-medium mb-2">Category *</label>
                   <select
                     className="w-full p-2 border border-gray-300 rounded-md"
                     value={newPost.category}
@@ -486,7 +527,7 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Content (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
+                    Content * (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
                   </label>
                   <Textarea
                     placeholder="Write your post content here... You can use HTML tags including <img> for images."
