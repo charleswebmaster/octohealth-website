@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Shield, FileCheck, Users, Target, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useBlog } from "@/contexts/blog-context"
 import { useEffect, useState } from "react"
 
@@ -119,7 +120,7 @@ export function BlogCategories() {
                           "Executive insights and strategic planning for HMO leaders"}
                       </p>
                       <Link
-                        href="#"
+                        href={`/blog/category/${encodeURIComponent(category.name)}`}
                         className="inline-flex items-center text-[#1886CD] hover:text-[#1565A0] font-medium transition-colors"
                       >
                         Explore Category
@@ -132,30 +133,57 @@ export function BlogCategories() {
             </div>
           </div>
 
-          {/* Recent Articles Sidebar */}
+          {/* Recent Articles Sidebar with Thumbnails */}
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Recent Articles</h3>
             <div className="space-y-6">
               {publishedPosts.length > 0 ? (
                 publishedPosts.map((article) => (
-                  <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
-                        <Link href={`/blog/${article.slug}`}>{article.title}</Link>
-                      </h4>
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <Badge variant="outline" className="text-xs">
-                          {article.category}
-                        </Badge>
-                        <span>{article.readTime}</span>
+                  <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
+                    <div className="flex">
+                      {/* Thumbnail */}
+                      <div className="w-24 h-20 flex-shrink-0">
+                        <Image
+                          src={article.image || "/placeholder.svg"}
+                          alt={article.title}
+                          width={96}
+                          height={80}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </CardContent>
+
+                      {/* Content */}
+                      <CardContent className="p-4 flex-1">
+                        <h4 className="font-semibold text-gray-900 mb-2 hover:text-[#1886CD] transition-colors text-sm leading-tight line-clamp-2">
+                          <Link href={`/blog/${article.slug}`}>{article.title}</Link>
+                        </h4>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <Badge variant="outline" className="text-xs">
+                            {article.category}
+                          </Badge>
+                          <span>{article.readTime}</span>
+                        </div>
+                      </CardContent>
+                    </div>
                   </Card>
                 ))
               ) : (
                 <p className="text-gray-600">No recent articles available.</p>
               )}
             </div>
+
+            {/* View All Articles Link */}
+            {publishedPosts.length > 0 && (
+              <div className="mt-6">
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center text-[#1886CD] hover:text-[#1565A0] font-medium transition-colors"
+                >
+                  View All Articles
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
