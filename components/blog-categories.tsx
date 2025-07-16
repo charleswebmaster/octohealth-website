@@ -140,31 +140,33 @@ export function BlogCategories() {
               {publishedPosts.length > 0 ? (
                 publishedPosts.map((article) => (
                   <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
-                    <div className="flex">
-                      {/* Thumbnail */}
-                      <div className="w-24 h-20 flex-shrink-0">
-                        <Image
-                          src={article.image || "/placeholder.svg"}
-                          alt={article.title}
-                          width={96}
-                          height={80}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <CardContent className="p-4 flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-2 hover:text-[#1886CD] transition-colors text-sm leading-tight line-clamp-2">
-                          <Link href={`/blog/${article.slug}`}>{article.title}</Link>
-                        </h4>
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <Badge variant="outline" className="text-xs">
-                            {article.category}
-                          </Badge>
-                          <span>{article.readTime}</span>
+                    <Link href={`/blog/${article.slug}`} className="block">
+                      <div className="flex">
+                        {/* Thumbnail */}
+                        <div className="w-24 h-20 flex-shrink-0">
+                          <Image
+                            src={article.image || "/placeholder.svg?height=80&width=96&text=Blog"}
+                            alt={article.title}
+                            width={96}
+                            height={80}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                      </CardContent>
-                    </div>
+
+                        {/* Content */}
+                        <CardContent className="p-4 flex-1">
+                          <h4 className="font-semibold text-gray-900 mb-2 hover:text-[#1886CD] transition-colors text-sm leading-tight line-clamp-2">
+                            {article.title}
+                          </h4>
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <Badge variant="outline" className="text-xs">
+                              {article.category}
+                            </Badge>
+                            <span>{article.readTime}</span>
+                          </div>
+                        </CardContent>
+                      </div>
+                    </Link>
                   </Card>
                 ))
               ) : (

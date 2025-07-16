@@ -91,24 +91,28 @@ export function FeaturedArticles() {
                 key={post.id}
                 className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 shadow-lg bg-white/80 backdrop-blur-sm overflow-hidden"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={post.image || "/placeholder.svg"}
-                    alt={post.title}
-                    width={400}
-                    height={200}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4 flex gap-2">
-                    <Badge variant="secondary" className="text-xs bg-white/90">
-                      {post.category}
-                    </Badge>
-                    <Badge className="bg-[#1886CD] text-white text-xs">Featured</Badge>
+                <Link href={`/blog/${post.slug}`} className="block">
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={post.image || "/placeholder.svg?height=200&width=400&text=Blog+Image"}
+                      alt={post.title}
+                      width={400}
+                      height={200}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      <Badge variant="secondary" className="text-xs bg-white/90">
+                        {post.category}
+                      </Badge>
+                      <Badge className="bg-[#1886CD] text-white text-xs">Featured</Badge>
+                    </div>
                   </div>
-                </div>
+                </Link>
                 <CardHeader>
                   <CardTitle className="text-xl group-hover:text-[#1886CD] transition-colors">
-                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                    <Link href={`/blog/${post.slug}`} className="hover:text-[#1886CD]">
+                      {post.title}
+                    </Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

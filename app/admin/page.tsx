@@ -534,10 +534,14 @@ export default function AdminDashboard() {
                                     </div>
                                     <div>
                                       <label className="block text-sm font-medium mb-2">Content</label>
+                                      <div className="mb-2 text-sm text-gray-600">
+                                        <p>Tips: Use double line breaks (Enter twice) to create paragraph spacing</p>
+                                      </div>
                                       <Textarea
-                                        rows={10}
+                                        rows={15}
                                         value={editingPost.content}
                                         onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
+                                        className="font-mono text-sm"
                                       />
                                     </div>
                                     <div className="flex gap-2">
@@ -719,11 +723,26 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Content *</label>
+                  <div className="mb-2 text-sm text-gray-600">
+                    <p>Tips for better formatting:</p>
+                    <ul className="list-disc list-inside text-xs space-y-1 mt-1">
+                      <li>Press Enter twice to create paragraph breaks</li>
+                      <li>Use line breaks to separate ideas</li>
+                      <li>Keep paragraphs concise for better readability</li>
+                    </ul>
+                  </div>
                   <Textarea
-                    placeholder="Write your post content here..."
-                    rows={10}
+                    placeholder="Write your post content here...
+
+Use double line breaks to create new paragraphs.
+
+This will ensure proper spacing and readability on the blog.
+
+You can write multiple paragraphs like this for better content structure."
+                    rows={15}
                     value={newPost.content}
                     onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                    className="font-mono text-sm"
                   />
                 </div>
 

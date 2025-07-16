@@ -83,16 +83,35 @@
   overflow: hidden;
 }
 
-/* Blog content styling for better readability */
+/* Enhanced blog content styling for better readability */
+.blog-content-formatted {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #374151;
+}
+
+.blog-content-formatted p {
+  margin-bottom: 1.5rem !important;
+  line-height: 1.8 !important;
+  color: #374151 !important;
+  font-size: 18px !important;
+}
+
+.blog-content-formatted p:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Legacy blog content styling (for dangerouslySetInnerHTML content) */
 .blog-content {
   line-height: 1.8;
   font-size: 18px;
 }
 
 .blog-content p {
-  margin-bottom: 1.5rem;
-  line-height: 1.8;
-  color: #374151;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.8 !important;
+  color: #374151 !important;
+  white-space: pre-wrap !important;
 }
 
 .blog-content h1,
@@ -101,73 +120,93 @@
 .blog-content h4,
 .blog-content h5,
 .blog-content h6 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.4;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  line-height: 1.4 !important;
 }
 
 .blog-content h1 {
-  font-size: 2rem;
+  font-size: 2rem !important;
 }
 .blog-content h2 {
-  font-size: 1.75rem;
+  font-size: 1.75rem !important;
 }
 .blog-content h3 {
-  font-size: 1.5rem;
+  font-size: 1.5rem !important;
 }
 .blog-content h4 {
-  font-size: 1.25rem;
+  font-size: 1.25rem !important;
 }
 
 .blog-content ul,
 .blog-content ol {
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1.5rem !important;
 }
 
 .blog-content li {
-  margin-bottom: 0.5rem;
-  line-height: 1.7;
-  color: #374151;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.7 !important;
+  color: #374151 !important;
 }
 
 .blog-content blockquote {
-  border-left: 4px solid #1886cd;
-  padding-left: 1.5rem;
-  margin: 2rem 0;
-  font-style: italic;
-  color: #6b7280;
-  background-color: #f9fafb;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
+  border-left: 4px solid #1886cd !important;
+  padding-left: 1.5rem !important;
+  margin: 2rem 0 !important;
+  font-style: italic !important;
+  color: #6b7280 !important;
+  background-color: #f9fafb !important;
+  padding: 1.5rem !important;
+  border-radius: 0.5rem !important;
 }
 
 .blog-content img {
-  margin: 2rem 0;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
 }
 
 .blog-content a {
-  color: #1886cd;
-  text-decoration: underline;
+  color: #1886cd !important;
+  text-decoration: underline !important;
 }
 
 .blog-content a:hover {
-  color: #1565a0;
+  color: #1565a0 !important;
 }
 
 .blog-content strong {
-  font-weight: 600;
-  color: #111827;
+  font-weight: 600 !important;
+  color: #111827 !important;
 }
 
 .blog-content code {
-  background-color: #f3f4f6;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-family: "Courier New", monospace;
-  font-size: 0.9em;
+  background-color: #f3f4f6 !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  font-family: "Courier New", monospace !important;
+  font-size: 0.9em !important;
+}
+
+/* Ensure proper spacing for all text content */
+.blog-content-formatted * {
+  white-space: pre-wrap;
+}
+
+/* Handle line breaks properly */
+.blog-content br {
+  display: block !important;
+  margin: 0.5rem 0 !important;
+  content: "" !important;
+}
+
+/* Ensure paragraphs have proper spacing even with inline styles */
+.blog-content p,
+.blog-content-formatted p {
+  display: block !important;
+  margin-top: 0 !important;
+  margin-bottom: 1.5rem !important;
 }

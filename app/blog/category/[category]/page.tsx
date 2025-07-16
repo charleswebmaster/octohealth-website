@@ -1,3 +1,5 @@
+"use client"
+
 import { BlogHeader } from "@/components/blog-header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,12 +7,45 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, ArrowRight, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { getBlogPosts } from "@/lib/firebase"
+import { useEffect, useState } from "react"
+import { getBlogPosts, type BlogPost } from "@/lib/firebase"
 
-export default async function CategoryPage({ params }: { params: { category: string } }) {
+export default function CategoryPage({ params }: { params: { category: string } }) {
+  const [categoryPosts, setCategoryPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
   const decodedCategory = decodeURIComponent(params.category)
-  const allPosts = await getBlogPosts()
-  const categoryPosts = allPosts.filter((post) => post.category === decodedCategory)
+
+  useEffect(() => {
+    async function fetchCategoryPosts() {
+      try {
+        const allPosts = await getBlogPosts()
+        const filteredPosts = allPosts.filter((post) => post.category === decodedCategory)
+        setCategoryPosts(filteredPosts)
+      } catch (error) {
+        console.error("Error loading category posts:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCategoryPosts()
+  }, [decodedCategory])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <BlogHeader />
+        <main>
+          <section className="py-16">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <p className="text-gray-600">Loading articles...</p>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -48,14 +83,7 @@ export default async function CategoryPage({ params }: { params: { category: str
             ) : (
               <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
                 {categoryPosts.map((post) => {
-                  const publishedDate = post.publishedAt
-                    ? typeof post.publishedAt === "object"
-                      ? post.publishedAt.toDate()
-                      : new Date(post.publishedAt)
-                    : typeof post.createdAt === "object"
-                      ? post.createdAt.toDate()
-                      : new Date(post.createdAt)
-
+                  const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
                   const formattedDate = publishedDate.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
@@ -67,18 +95,22 @@ export default async function CategoryPage({ params }: { params: { category: str
                       key={post.id}
                       className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 shadow-lg bg-white/80 backdrop-blur-sm overflow-hidden"
                     >
-                      <div className="relative h-48 overflow-hidden">
-                        <Image
-                          src={post.image || "/placeholder.svg"}
-                          alt={post.title}
-                          width={400}
-                          height={200}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
+                      <Link href={`/blog/${post.slug}`} className="block">
+                        <div className="relative h-48 overflow-hidden">
+                          <Image
+                            src={post.image || "/placeholder.svg?height=200&width=400&text=Blog+Image"}
+                            alt={post.title}
+                            width={400}
+                            height={200}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      </Link>
                       <CardHeader>
                         <CardTitle className="text-xl group-hover:text-[#1886CD] transition-colors">
-                          <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                          <Link href={`/blog/${post.slug}`} className="hover:text-[#1886CD]">
+                            {post.title}
+                          </Link>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>

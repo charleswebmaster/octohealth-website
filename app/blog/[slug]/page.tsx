@@ -8,10 +8,59 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { getBlogPostBySlug } from "@/lib/firebase"
+import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const post = await getBlogPostBySlug(params.slug)
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  const [post, setPost] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const blogPost = await getBlogPostBySlug(params.slug)
+        if (!blogPost) {
+          notFound()
+          return
+        }
+        setPost(blogPost)
+      } catch (error) {
+        console.error("Error loading blog post:", error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPost()
+  }, [params.slug])
+
+  // Function to format content with proper line breaks
+  const formatContent = (content: string) => {
+    return content
+      .split("\n")
+      .map((paragraph) => paragraph.trim())
+      .filter((paragraph) => paragraph.length > 0)
+      .map((paragraph, index) => (
+        <p key={index} className="mb-6 text-lg leading-relaxed text-gray-800">
+          {paragraph}
+        </p>
+      ))
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <BlogHeader />
+        <main>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+            <p className="text-gray-600">Loading article...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   if (!post) {
     notFound()
@@ -63,7 +112,7 @@ export default async function BlogPost({ params }: { params: { slug: string } })
 
             <div className="mb-12">
               <Image
-                src={post.image || "/placeholder.svg"}
+                src={post.image || "/placeholder.svg?height=400&width=800&text=Blog+Image"}
                 alt={post.title}
                 width={800}
                 height={400}
@@ -77,12 +126,9 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               </p>
             </div>
 
-            {/* Enhanced content formatting for better readability */}
+            {/* Enhanced content formatting with proper paragraph spacing */}
             <div className="prose prose-lg max-w-none">
-              <div
-                className="blog-content text-gray-800 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
+              <div className="blog-content-formatted">{formatContent(post.content)}</div>
             </div>
 
             <div className="mt-16 pt-8 border-t border-gray-200">
@@ -100,83 +146,6 @@ export default async function BlogPost({ params }: { params: { slug: string } })
         </article>
       </main>
       <Footer />
-
-      {/* Add custom CSS for better content formatting */}
-      <style jsx global>{`
-        .blog-content {
-          line-height: 1.8;
-          font-size: 18px;
-        }
-        
-        .blog-content p {
-          margin-bottom: 1.5rem;
-          line-height: 1.8;
-          color: #374151;
-        }
-        
-        .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          font-weight: 600;
-          color: #111827;
-          line-height: 1.4;
-        }
-        
-        .blog-content h1 { font-size: 2rem; }
-        .blog-content h2 { font-size: 1.75rem; }
-        .blog-content h3 { font-size: 1.5rem; }
-        .blog-content h4 { font-size: 1.25rem; }
-        
-        .blog-content ul, .blog-content ol {
-          margin-bottom: 1.5rem;
-          padding-left: 1.5rem;
-        }
-        
-        .blog-content li {
-          margin-bottom: 0.5rem;
-          line-height: 1.7;
-          color: #374151;
-        }
-        
-        .blog-content blockquote {
-          border-left: 4px solid #1886CD;
-          padding-left: 1.5rem;
-          margin: 2rem 0;
-          font-style: italic;
-          color: #6B7280;
-          background-color: #F9FAFB;
-          padding: 1.5rem;
-          border-radius: 0.5rem;
-        }
-        
-        .blog-content img {
-          margin: 2rem 0;
-          border-radius: 0.75rem;
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .blog-content a {
-          color: #1886CD;
-          text-decoration: underline;
-        }
-        
-        .blog-content a:hover {
-          color: #1565A0;
-        }
-        
-        .blog-content strong {
-          font-weight: 600;
-          color: #111827;
-        }
-        
-        .blog-content code {
-          background-color: #F3F4F6;
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.25rem;
-          font-family: 'Courier New', monospace;
-          font-size: 0.9em;
-        }
-      `}</style>
     </div>
   )
 }
