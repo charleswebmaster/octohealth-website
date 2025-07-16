@@ -18,6 +18,7 @@ export const auth = getAuth(app)
 export const signInAnon = async (): Promise<User | null> => {
   try {
     const result = await signInAnonymously(auth)
+    console.log("Anonymous sign-in successful:", result.user.uid)
     return result.user
   } catch (error) {
     console.error("Error signing in anonymously:", error)
@@ -29,6 +30,7 @@ export const signInAnon = async (): Promise<User | null> => {
 export const signOut = async (): Promise<boolean> => {
   try {
     await firebaseSignOut(auth)
+    console.log("Sign out successful")
     return true
   } catch (error) {
     console.error("Error signing out:", error)
@@ -41,7 +43,10 @@ export const getCurrentUser = (): User | null => {
   return auth.currentUser
 }
 
-// Listen for auth state changes
+// Listen for auth state changes with timeout
 export const onAuthChange = (callback: (user: User | null) => void): (() => void) => {
-  return onAuthStateChanged(auth, callback)
+  return onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? user.uid : "No user")
+    callback(user)
+  })
 }

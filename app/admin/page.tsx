@@ -8,25 +8,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, Eye, Save, ExternalLink, AlertCircle, LogOut } from "lucide-react"
-import { useBlog } from "@/contexts/blog-context"
+import { Plus, Edit, Trash2, Eye, Save, ExternalLink, AlertCircle, LogOut, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { signInAnon, signOut, onAuthChange } from "@/lib/auth"
+import {
+  getAllBlogPosts,
+  getCategories,
+  addBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+  generateSlug,
+  calculateReadTime,
+  initializeDefaultCategories,
+  type BlogPost,
+  type Category,
+} from "@/lib/firebase"
 
 export default function AdminDashboard() {
-  const {
-    posts,
-    categories,
-    loading: blogLoading,
-    addPost,
-    updatePost,
-    deletePost,
-    publishPost,
-    addCategory,
-    updateCategory,
-    deleteCategory,
-    refreshData,
-  } = useBlog()
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(false)
 
   const [newPost, setNewPost] = useState({
     title: "",
@@ -40,61 +45,101 @@ export default function AdminDashboard() {
   const [editingPost, setEditingPost] = useState<any>(null)
   const [editingCategory, setEditingCategory] = useState<any>(null)
   const [newCategory, setNewCategory] = useState("")
-  const [viewingPost, setViewingPost] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
-  const [authLoading, setAuthLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
 
-  // Handle authentication
+  // Initialize auth and data
   useEffect(() => {
-    const unsubscribe = onAuthChange((currentUser) => {
-      setUser(currentUser)
-      setAuthLoading(false)
-    })
+    let mounted = true
+    let unsubscribe: (() => void) | null = null
 
-    return () => unsubscribe()
+    const initializeAuth = async () => {
+      try {
+        // Set up auth listener
+        unsubscribe = onAuthChange(async (currentUser) => {
+          if (!mounted) return
+
+          console.log("Auth state:", currentUser ? "Authenticated" : "Not authenticated")
+          setUser(currentUser)
+          setAuthChecked(true)
+
+          if (currentUser) {
+            // User is authenticated, load data
+            await loadData()
+          } else if (authChecked) {
+            // User is not authenticated and we've checked, try to sign in
+            console.log("Attempting anonymous sign-in...")
+            const signedInUser = await signInAnon()
+            if (signedInUser && mounted) {
+              setUser(signedInUser)
+              await loadData()
+            }
+          }
+
+          if (mounted) {
+            setLoading(false)
+          }
+        })
+
+        // Add timeout to prevent infinite loading
+        setTimeout(() => {
+          if (mounted && loading) {
+            console.log("Auth timeout, attempting sign-in...")
+            signInAnon().then(async (signedInUser) => {
+              if (signedInUser && mounted) {
+                setUser(signedInUser)
+                await loadData()
+                setLoading(false)
+              } else if (mounted) {
+                setLoading(false)
+              }
+            })
+          }
+        }, 3000)
+      } catch (error) {
+        console.error("Auth initialization error:", error)
+        if (mounted) {
+          setLoading(false)
+          showError("Authentication failed. Please refresh the page.")
+        }
+      }
+    }
+
+    initializeAuth()
+
+    return () => {
+      mounted = false
+      if (unsubscribe) {
+        unsubscribe()
+      }
+    }
   }, [])
 
-  // Auto sign in anonymously if not signed in
-  useEffect(() => {
-    if (!authLoading && !user) {
-      handleSignIn()
-    }
-  }, [authLoading, user])
+  const loadData = async () => {
+    if (dataLoading) return
 
-  useEffect(() => {
-    if (user) {
-      refreshData()
-    }
-  }, [user, refreshData])
-
-  const handleSignIn = async () => {
-    setAuthLoading(true)
     try {
-      const user = await signInAnon()
-      if (user) {
-        setUser(user)
-        showSuccess("Signed in successfully")
-      } else {
-        showError("Failed to sign in")
-      }
+      setDataLoading(true)
+      console.log("Loading blog data...")
+
+      // Initialize default categories first
+      await initializeDefaultCategories()
+
+      // Load posts and categories in parallel
+      const [allPosts, allCategories] = await Promise.all([getAllBlogPosts(), getCategories()])
+
+      console.log("Loaded posts:", allPosts.length)
+      console.log("Loaded categories:", allCategories.length)
+
+      setPosts(allPosts)
+      setCategories(allCategories)
     } catch (error) {
-      console.error("Error signing in:", error)
-      showError("Authentication error")
+      console.error("Error loading data:", error)
+      showError("Failed to load blog data. Please refresh the page.")
     } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-      setUser(null)
-      showSuccess("Signed out successfully")
-    } catch (error) {
-      console.error("Error signing out:", error)
-      showError("Failed to sign out")
+      setDataLoading(false)
     }
   }
 
@@ -108,6 +153,19 @@ export default function AdminDashboard() {
     setTimeout(() => setSuccess(null), 3000)
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      setUser(null)
+      setPosts([])
+      setCategories([])
+      showSuccess("Signed out successfully")
+    } catch (error) {
+      console.error("Error signing out:", error)
+      showError("Failed to sign out")
+    }
+  }
+
   const handleAddPost = async () => {
     if (!newPost.title || !newPost.content || !newPost.category) {
       showError("Please fill in all required fields (title, content, category)")
@@ -115,17 +173,22 @@ export default function AdminDashboard() {
     }
 
     try {
-      await addPost({
+      const slug = generateSlug(newPost.title)
+      const readTime = calculateReadTime(newPost.content)
+
+      await addBlogPost({
         title: newPost.title,
         content: newPost.content,
         excerpt: newPost.excerpt,
         category: newPost.category,
         status: "Draft",
         image: newPost.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
-        slug: "",
-        readTime: "",
+        slug,
+        readTime,
       })
+
       setNewPost({ title: "", content: "", category: "", excerpt: "", image: "", status: "Draft" })
+      await loadData()
       showSuccess("Post created successfully!")
     } catch (error) {
       console.error("Error adding post:", error)
@@ -141,8 +204,17 @@ export default function AdminDashboard() {
     if (!editingPost) return
 
     try {
-      await updatePost(editingPost.id, editingPost)
+      const updates = { ...editingPost }
+      if (editingPost.title) {
+        updates.slug = generateSlug(editingPost.title)
+      }
+      if (editingPost.content) {
+        updates.readTime = calculateReadTime(editingPost.content)
+      }
+
+      await updateBlogPost(editingPost.id, updates)
       setEditingPost(null)
+      await loadData()
       showSuccess("Post updated successfully!")
     } catch (error) {
       console.error("Error updating post:", error)
@@ -154,7 +226,8 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this post?")) return
 
     try {
-      await deletePost(id)
+      await deleteBlogPost(id)
+      await loadData()
       showSuccess("Post deleted successfully!")
     } catch (error) {
       console.error("Error deleting post:", error)
@@ -162,13 +235,10 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleViewPost = (post: any) => {
-    setViewingPost(post)
-  }
-
   const handlePublishPost = async (id: string) => {
     try {
-      await publishPost(id)
+      await updateBlogPost(id, { status: "Published" })
+      await loadData()
       showSuccess("Post published successfully!")
     } catch (error) {
       console.error("Error publishing post:", error)
@@ -183,8 +253,9 @@ export default function AdminDashboard() {
     }
 
     try {
-      await addCategory(newCategory.trim())
+      await addCategory({ name: newCategory.trim(), count: 0 })
       setNewCategory("")
+      await loadData()
       showSuccess("Category added successfully!")
     } catch (error) {
       console.error("Error adding category:", error)
@@ -202,6 +273,7 @@ export default function AdminDashboard() {
     try {
       await updateCategory(editingCategory.id, editingCategory)
       setEditingCategory(null)
+      await loadData()
       showSuccess("Category updated successfully!")
     } catch (error) {
       console.error("Error updating category:", error)
@@ -214,6 +286,7 @@ export default function AdminDashboard() {
 
     try {
       await deleteCategory(id)
+      await loadData()
       showSuccess("Category deleted successfully!")
     } catch (error) {
       console.error("Error deleting category:", error)
@@ -222,12 +295,18 @@ export default function AdminDashboard() {
   }
 
   // Loading state
-  if (authLoading || blogLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1886CD] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-[#1886CD] mx-auto" />
+          <div>
+            <p className="text-gray-900 font-medium">Loading Admin Dashboard</p>
+            <p className="text-gray-600 text-sm">Setting up authentication and loading data...</p>
+          </div>
+          <Button onClick={() => window.location.reload()} variant="outline" className="mt-4">
+            Refresh Page
+          </Button>
         </div>
       </div>
     )
@@ -243,8 +322,27 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">You need to sign in to access the admin dashboard.</p>
-            <Button onClick={handleSignIn} className="w-full bg-[#1886CD] hover:bg-[#1565A0]">
-              Sign In Anonymously
+            <Button
+              onClick={async () => {
+                setLoading(true)
+                const user = await signInAnon()
+                if (user) {
+                  setUser(user)
+                  await loadData()
+                }
+                setLoading(false)
+              }}
+              className="w-full bg-[#1886CD] hover:bg-[#1565A0]"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                "Sign In Anonymously"
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -259,7 +357,15 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Blog Admin Dashboard</h1>
-              <p className="text-gray-600">Manage your blog posts, categories, and media</p>
+              <p className="text-gray-600">
+                Manage your blog posts and categories
+                {dataLoading && (
+                  <span className="ml-2 inline-flex items-center">
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    Loading...
+                  </span>
+                )}
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="outline" onClick={handleSignOut} className="flex items-center gap-2 bg-transparent">
@@ -309,160 +415,172 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="grid gap-4">
-              {posts.map((post) => {
-                const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
-                const formattedDate = publishedDate.toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+            {posts.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-600 mb-4">No blog posts yet. Create your first post!</p>
+                  <Button className="bg-[#1886CD] hover:bg-[#1565A0]">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create First Post
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {posts.map((post) => {
+                  const publishedDate = post.publishedAt?.toDate() || post.createdAt.toDate()
+                  const formattedDate = publishedDate.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
 
-                return (
-                  <Card key={post.id}>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <Badge variant="outline">{post.category}</Badge>
-                            <span>{formattedDate}</span>
-                            <Badge variant={post.status === "Published" ? "default" : "secondary"}>{post.status}</Badge>
-                            <span>{post.readTime}</span>
+                  return (
+                    <Card key={post.id}>
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <Badge variant="outline">{post.category}</Badge>
+                              <span>{formattedDate}</span>
+                              <Badge variant={post.status === "Published" ? "default" : "secondary"}>
+                                {post.status}
+                              </Badge>
+                              <span>{post.readTime}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm" onClick={() => handleViewPost(post)}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle>{post.title}</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                  <Badge>{post.category}</Badge>
-                                  <span>{formattedDate}</span>
-                                  <Badge variant={post.status === "Published" ? "default" : "secondary"}>
-                                    {post.status}
-                                  </Badge>
-                                </div>
-                                {post.image && (
-                                  <img
-                                    src={post.image || "/placeholder.svg"}
-                                    alt={post.title}
-                                    className="w-full h-48 object-cover rounded-lg"
-                                  />
-                                )}
-                                <p className="text-gray-600 italic">{post.excerpt}</p>
-                                <div className="prose max-w-none">
-                                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                                </div>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm" onClick={() => handleEditPost(post)}>
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle>Edit Post</DialogTitle>
-                              </DialogHeader>
-                              {editingPost && (
+                          <div className="flex items-center space-x-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>{post.title}</DialogTitle>
+                                </DialogHeader>
                                 <div className="space-y-4">
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Title</label>
-                                    <Input
-                                      value={editingPost.title}
-                                      onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                    <Badge>{post.category}</Badge>
+                                    <span>{formattedDate}</span>
+                                    <Badge variant={post.status === "Published" ? "default" : "secondary"}>
+                                      {post.status}
+                                    </Badge>
+                                  </div>
+                                  {post.image && (
+                                    <img
+                                      src={post.image || "/placeholder.svg"}
+                                      alt={post.title}
+                                      className="w-full h-48 object-cover rounded-lg"
                                     />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Category</label>
-                                    <select
-                                      className="w-full p-2 border border-gray-300 rounded-md"
-                                      value={editingPost.category}
-                                      onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
-                                    >
-                                      {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.name}>
-                                          {cat.name}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Excerpt</label>
-                                    <Textarea
-                                      value={editingPost.excerpt}
-                                      onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Featured Image URL</label>
-                                    <Input
-                                      value={editingPost.image}
-                                      onChange={(e) => setEditingPost({ ...editingPost, image: e.target.value })}
-                                      placeholder="https://example.com/image.jpg"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">
-                                      Content (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
-                                    </label>
-                                    <Textarea
-                                      rows={10}
-                                      value={editingPost.content}
-                                      onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Button onClick={handleSaveEdit} className="bg-[#1886CD] hover:bg-[#1565A0]">
-                                      <Save className="h-4 w-4 mr-2" />
-                                      Save Changes
-                                    </Button>
-                                    <Button variant="outline" onClick={() => setEditingPost(null)}>
-                                      Cancel
-                                    </Button>
+                                  )}
+                                  <p className="text-gray-600 italic">{post.excerpt}</p>
+                                  <div className="prose max-w-none">
+                                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
                                   </div>
                                 </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
+                              </DialogContent>
+                            </Dialog>
 
-                          {post.status === "Draft" && (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" onClick={() => handleEditPost(post)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Edit Post</DialogTitle>
+                                </DialogHeader>
+                                {editingPost && (
+                                  <div className="space-y-4">
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2">Title</label>
+                                      <Input
+                                        value={editingPost.title}
+                                        onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2">Category</label>
+                                      <select
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        value={editingPost.category}
+                                        onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                                      >
+                                        {categories.map((cat) => (
+                                          <option key={cat.id} value={cat.name}>
+                                            {cat.name}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2">Excerpt</label>
+                                      <Textarea
+                                        value={editingPost.excerpt}
+                                        onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2">Featured Image URL</label>
+                                      <Input
+                                        value={editingPost.image}
+                                        onChange={(e) => setEditingPost({ ...editingPost, image: e.target.value })}
+                                        placeholder="https://example.com/image.jpg"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2">Content</label>
+                                      <Textarea
+                                        rows={10}
+                                        value={editingPost.content}
+                                        onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
+                                      />
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Button onClick={handleSaveEdit} className="bg-[#1886CD] hover:bg-[#1565A0]">
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Save Changes
+                                      </Button>
+                                      <Button variant="outline" onClick={() => setEditingPost(null)}>
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
+
+                            {post.status === "Draft" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handlePublishPost(post.id)}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                Publish
+                              </Button>
+                            )}
+
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handlePublishPost(post.id)}
-                              className="text-green-600 hover:text-green-700"
+                              onClick={() => handleDeletePost(post.id)}
+                              className="text-red-600 hover:text-red-700"
                             >
-                              Publish
+                              <Trash2 className="h-4 w-4" />
                             </Button>
-                          )}
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeletePost(post.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="categories" className="space-y-6">
@@ -597,25 +715,16 @@ export default function AdminDashboard() {
                     value={newPost.image}
                     onChange={(e) => setNewPost({ ...newPost, image: e.target.value })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Use external image URLs (e.g., Unsplash, Cloudinary, etc.)
-                  </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Content * (HTML supported for images: &lt;img src="url" alt="description" /&gt;)
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Content *</label>
                   <Textarea
-                    placeholder="Write your post content here... You can use HTML tags including <img> for images."
+                    placeholder="Write your post content here..."
                     rows={10}
                     value={newPost.content}
                     onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    For images in content, use: &lt;img src="https://example.com/image.jpg" alt="Description"
-                    className="w-full rounded-lg my-4" /&gt;
-                  </p>
                 </div>
 
                 <div className="flex gap-4">
