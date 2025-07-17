@@ -95,23 +95,29 @@ export function AfricanAdvantageSection() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
               {/* Placeholder for client logos */}
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-               {/* <span className="text-gray-500 text-sm">Client Logo</span> */}
-              </div>
-              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
-                <Image
+               <Image
                   src="/images/bastion-logo.webp"
                   alt="Bastion Health"
-                  width={120}
-                  height={48}
+                  width={220}
+                  height={58}
                   className="h-10 w-auto"
                 />
               </div>
               <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
                 <Image
                   src="/images/oceanic-logo.png"
-                  alt="Oceanic Health"
-                  width={120}
-                  height={48}
+                  alt="Oceanic Logo"
+                  width={220}
+                  height={58}
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
+                <Image
+                  src="/images/delog-logo.png"
+                  alt="Delog"
+                  width={220}
+                  height={58}
                   className="h-10 w-auto"
                 />
               </div>
