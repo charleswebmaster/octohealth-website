@@ -92,21 +92,24 @@ export function AfricanAdvantageSection() {
               Join the growing network of African healthcare organizations that trust OctoHealth ERP to power their
               operations.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-100">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-100">
               {/* Placeholder for client logos */}
               <div className="h-12 bg-white-200 rounded flex items-center justify-center">
-               <Image
+               {/* <span className="text-gray-500 text-sm">Client Logo</span> */}
+              </div>
+              <div className="h-12 bg-black-200 rounded flex items-center justify-center">
+                <Image
                   src="/images/bastion-logo.webp"
-                  alt="Bastion Health"
+                  alt="Bastion Logo"
                   width={220}
                   height={58}
                   className="h-10 w-auto"
                 />
               </div>
-              <div className="h-12 bg-black-200 rounded flex items-center justify-center">
+              <div className="h-12 bg-white-200 rounded flex items-center justify-center">
                 <Image
                   src="/images/oceanic-health-logo.png"
-                  alt="Oceanic Logo"
+                  alt="Oceanic Health"
                   width={220}
                   height={58}
                   className="h-10 w-auto"
