@@ -92,9 +92,9 @@ export function AfricanAdvantageSection() {
               Join the growing network of African healthcare organizations that trust OctoHealth ERP to power their
               operations.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-100">
               {/* Placeholder for client logos */}
-              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
+              <div className="h-12 bg-white-200 rounded flex items-center justify-center">
                <Image
                   src="/images/bastion-logo.webp"
                   alt="Bastion Health"
@@ -103,16 +103,16 @@ export function AfricanAdvantageSection() {
                   className="h-10 w-auto"
                 />
               </div>
-              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
+              <div className="h-12 bg-black-200 rounded flex items-center justify-center">
                 <Image
-                  src="/images/oceanic-logo.png"
+                  src="/images/oceanic-health-logo.png"
                   alt="Oceanic Logo"
                   width={220}
                   height={58}
                   className="h-10 w-auto"
                 />
               </div>
-              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
+              <div className="h-12 bg-white-200 rounded flex items-center justify-center">
                 <Image
                   src="/images/delog-logo.png"
                   alt="Delog"
@@ -121,7 +121,7 @@ export function AfricanAdvantageSection() {
                   className="h-10 w-auto"
                 />
               </div>
-              <div className="h-12 bg-gray-200 rounded flex items-center justify-center">
+              <div className="h-12 bg-white-200 rounded flex items-center justify-center">
                 {/* <span className="text-gray-500 text-sm">Client Logo</span> */}
               </div>
             </div>
