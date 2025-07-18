@@ -19,7 +19,7 @@ export function ProductTieIn() {
                 size="lg"
                 className="bg-white text-[#1886CD] hover:bg-gray-100 text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all"
               >
-                <a href="mailto:info@octohealth.com">Request a Demo</a>
+                <a href="mailto:info@octohealth.co">Request a Demo</a>
               </Button>
               <Button
                 size="lg"

@@ -21,7 +21,7 @@ export function DemoSection() {
                 See OctoHealth ERP in action with a personalized demo tailored to your HMO's needs.
               </p>
               <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
-                <a href="mailto:info@octohealth.com">Book Demo</a>
+                <a href="mailto:info@octohealth.co">Book Demo</a>
               </Button>
             </CardContent>
           </Card>
@@ -36,7 +36,7 @@ export function DemoSection() {
                 Get answers about features, pricing, implementation, and how OctoHealth fits your workflow.
               </p>
               <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
-                <a href="mailto:info@octohealth.com">Contact Us</a>
+                <a href="mailto:info@octohealth.co">Contact Us</a>
               </Button>
             </CardContent>
           </Card>
@@ -51,7 +51,7 @@ export function DemoSection() {
                 Connect with our healthcare technology experts to discuss your specific requirements.
               </p>
               <Button className="w-full bg-[#1886CD] hover:bg-[#1565A0] text-white shadow-lg hover:shadow-xl transition-all">
-                <a href="mailto:info@octohealth.com">Get in Touch</a>
+                <a href="mailto:info@octohealth.co">Get in Touch</a>
               </Button>
             </CardContent>
           </Card>

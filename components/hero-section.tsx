@@ -22,7 +22,7 @@ export function HeroSection() {
                   size="lg"
                   className="bg-[#1886CD] hover:bg-[#1565A0] text-white text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  <a href="mailto:info@octohealth.com">Request a Demo</a>
+                  <a href="mailto:info@octohealth.co">Request a Demo</a>
                 </Button>
                 <Button
                   size="lg"

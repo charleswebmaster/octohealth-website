@@ -138,7 +138,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
                   Discover how OctoHealth ERP can help you implement the strategies discussed in this article.
                 </p>
                 <Button className="bg-[#1886CD] hover:bg-[#1565A0] text-white">
-                  <a href="mailto:info@octohealth.com">Request a Demo</a>
+                  <a href="mailto:info@octohealth.co">Request a Demo</a>
                 </Button>
               </div>
             </div>
