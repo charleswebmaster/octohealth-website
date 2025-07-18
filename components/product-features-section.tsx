@@ -173,16 +173,19 @@ export function ProductFeaturesSection() {
     if (tabsContainerRef.current && !isUserInteracting) {
       const activeTabElement = tabsContainerRef.current.children[activeTab] as HTMLElement
       if (activeTabElement) {
-        // Only scroll the tabs container, not the entire page
         const container = tabsContainerRef.current
         const tabRect = activeTabElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
 
         if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
-          activeTabElement.scrollIntoView({
+          // Use scrollLeft instead of scrollIntoView to prevent page scrolling
+          const scrollLeft =
+            activeTabElement.offsetLeft -
+            container.offsetLeft -
+            (container.clientWidth - activeTabElement.clientWidth) / 2
+          container.scrollTo({
+            left: Math.max(0, scrollLeft),
             behavior: "smooth",
-            block: "nearest",
-            inline: "center",
           })
         }
       }
