@@ -65,11 +65,11 @@ export function TestimonialsSection() {
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-br from-[#1886CD]/10 to-[#EA3056]/10 rounded-2xl p-8 shadow-inner">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Join <span className="text-[#1886CD]">2 African HMOs</span> Already Using OctoHealth ERP
+              Join <span className="text-[#1886CD]">Other African HMOs</span> Already Using OctoHealth ERP
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="text-3xl font-bold text-[#1886CD]">2</div>
+                <div className="text-3xl font-bold text-[#1886CD]">Top</div>
                 <div className="text-sm text-gray-600">Active HMOs</div>
               </div>
               <div className="p-4 bg-white rounded-xl shadow-sm">
