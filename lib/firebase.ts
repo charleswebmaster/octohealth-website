@@ -245,11 +245,10 @@ export async function initializeDefaultCategories(): Promise<void> {
 
     if (categories.length === 0) {
       const defaultCategories = [
-        "Operations & Efficiency",
-        "Claims & Fraud",
-        "Regulatory Compliance",
-        "Scaling & Growth",
         "Leadership & Strategy",
+        "Scaling & Growth",
+        "ERP Tips",
+        "AI",
       ]
 
       for (const categoryName of defaultCategories) {
