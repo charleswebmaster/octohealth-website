@@ -11,13 +11,13 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="bg-white rounded-lg p-2 w-fit">
+            <div className="bg-transparent rounded-lg p-0 w-fit">
               <Image
-                src="/images/octohealth-logo.jpeg"
+                src="/images/octohealth-logo.png"
                 alt="OctoHealth Logo"
-                width={160}
-                height={36}
-                className="h-9 w-auto"
+                width={170}
+                height={46}
+                className="h-11 w-auto"
               />
             </div>
             <p className="text-gray-400">
