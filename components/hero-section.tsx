@@ -60,7 +60,7 @@ export function HeroSection() {
             <div className="relative h-[600px] w-full">
               <div className="w-full h-full rounded-2xl shadow-2xl overflow-hidden bg-transparent p-4">
                 <Image
-                  src="/images/dashboard.png"
+                  src="/images/dash-main.png"
                   alt="OctoHealth ERP Main Dashboard"
                   width={1200}
                   height={800}
